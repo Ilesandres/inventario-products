@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getAllProducts } from '../services/productService'
+import { getAllProducts, getCategories } from '../services'
 import { Product } from '../types/Product'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -19,11 +19,17 @@ function ProductsPage(): React.JSX.Element {
     }
   }, [])
 
-  const categories = useMemo(() => {
-    const s = new Set<string>()
-    products.forEach((p) => s.add(p.category))
-    return Array.from(s)
-  }, [products])
+  const [categories, setCategories] = useState<string[]>([])
+
+  useEffect(() => {
+    let mounted = true
+    getCategories().then((c) => {
+      if (mounted) setCategories(c)
+    })
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const filtered = useMemo(() => {
     return products.filter((p) => {

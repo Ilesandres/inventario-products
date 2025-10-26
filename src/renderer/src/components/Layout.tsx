@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu } from 'react-icons/fi'
+import React, { useEffect, useRef, useState } from 'react'
+import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu, FiChevronDown, FiUser, FiLogOut } from 'react-icons/fi'
 
 type Props = {
   children: React.ReactNode
@@ -7,9 +7,31 @@ type Props = {
 
 function Layout({ children }: Props): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
 
-  const asideWidth = collapsed ? 'w-20' : 'w-64'
-  const mainMargin = collapsed ? 'ml-20' : 'ml-4'
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      const target = e.target as Node
+      if (profileOpen) {
+        if (menuRef.current && !menuRef.current.contains(target) && buttonRef.current && !buttonRef.current.contains(target)) {
+          setProfileOpen(false)
+        }
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [profileOpen])
+
+    const asideWidth = collapsed ? 'w-20' : 'w-64'
 
   return (
      <div className="flex min-h-screen bg-gray-900 text-gray-100">
@@ -62,20 +84,37 @@ function Layout({ children }: Props): React.JSX.Element {
             >
               <FiMenu className="text-gray-100 text-xl" />
             </button>
-            <div className="relative">
-              <input
-                className="bg-gray-800 text-sm placeholder-gray-400 rounded px-3 py-2 w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Buscar productos..."
-                aria-label="Buscar"
-              />
-            </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          {/* Profile / avatar with dropdown */}
+          <div className="flex items-center space-x-3 relative">
             <div className="text-sm text-gray-300">Andrés</div>
-            <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-sm">
+            <button
+              ref={buttonRef}
+              onClick={() => setProfileOpen((s) => !s)}
+              className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-sm relative focus:outline-none ring-0"
+              aria-haspopup="true"
+              aria-expanded={profileOpen}
+              title="Perfil"
+            >
               A
-            </div>
+              <FiChevronDown className="ml-1 text-gray-300 text-xs z-10" />
+            </button>
+
+            {profileOpen && (
+              <div ref={menuRef} className="absolute right-0 top-full mt-2 w-40 bg-gray-800 border border-gray-700 rounded shadow-lg z-40">
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* open profile */ setProfileOpen(false) }}>
+                  <FiUser /> Perfil
+                </button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* open settings */ setProfileOpen(false) }}>
+                  <FiSettings /> Ajustes
+                </button>
+                <div className="border-t border-gray-700" />
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* logout */ setProfileOpen(false) }}>
+                  <FiLogOut /> Cerrar sesión
+                </button>
+              </div>
+            )}
           </div>
         </header>
 

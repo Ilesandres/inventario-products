@@ -7,7 +7,7 @@ let products: Product[] = [
     category: 'Ropa',
     stock: 42,
     price: 12.99,
-    image: '',
+    image: 'https://picsum.photos/seed/prod_1/160/160',
     createdAt: new Date(),
   },
   {
@@ -16,7 +16,7 @@ let products: Product[] = [
     category: 'Electrónica',
     stock: 18,
     price: 59.99,
-    image: '',
+    image: 'https://picsum.photos/seed/prod_2/160/160',
     createdAt: new Date(),
   },
   {
@@ -25,7 +25,7 @@ let products: Product[] = [
     category: 'Accesorios',
     stock: 9,
     price: 34.5,
-    image: '',
+    image: 'https://picsum.photos/seed/prod_3/160/160',
     createdAt: new Date(),
   },
 ]
@@ -47,9 +47,11 @@ export async function createProduct(
   product: Omit<Product, 'id' | 'createdAt'>,
 ): Promise<Product> {
   const now = new Date()
+  const newId = generateId()
   const newProduct: Product = {
-    id: generateId(),
+    id: newId,
     createdAt: now,
+    image: product.image ?? `https://picsum.photos/seed/${newId}/160/160`,
     ...product,
   }
   products.push(newProduct)

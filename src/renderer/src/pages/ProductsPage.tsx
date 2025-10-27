@@ -23,13 +23,10 @@ function ProductsPage(): React.JSX.Element {
   const [, triggerReload] = useAtom(reloadAtom)
   
 
-  // UI state for create / edit
   const [editing, setEditing] = useState<Product | null>(null)
   const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
-    // trigger an initial load via reload atom
-    // reloadAtom write function doesn't take args
     ;(async () => {
       try {
         await triggerReload()

@@ -2,6 +2,7 @@ import Layout from './components/Layout'
 import ProductsPage from './pages/ProductsPage'
 import DashboardPage from './pages/DashboardPage'
 import React, { useEffect, useState } from 'react'
+import { AppProvider } from './context/AppContext'
 
 function App(): React.JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '#/products')
@@ -19,9 +20,11 @@ function App(): React.JSX.Element {
   else Page = <ProductsPage />
 
   return (
-    <Layout>
-      {Page}
-    </Layout>
+    <AppProvider>
+      <Layout>
+        {Page}
+      </Layout>
+    </AppProvider>
   )
 }
 

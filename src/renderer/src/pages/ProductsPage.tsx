@@ -4,6 +4,7 @@ import { Product } from '../types/Product'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import ProductForm from '../components/ProductForm'
 
 function ProductsPage(): React.JSX.Element {
   const [products, setProducts] = useState<Product[]>([])
@@ -16,7 +17,6 @@ function ProductsPage(): React.JSX.Element {
   // UI state for create / edit
   const [editing, setEditing] = useState<Product | null>(null)
   const [isCreating, setIsCreating] = useState(false)
-  const [form, setForm] = useState<Partial<Product>>({})
 
   // Load products and categories
   async function loadData() {
@@ -32,13 +32,11 @@ function ProductsPage(): React.JSX.Element {
   function startCreate() {
     setIsCreating(true)
     setEditing(null)
-    setForm({})
   }
 
   function startEdit(p: Product) {
     setEditing(p)
     setIsCreating(false)
-    setForm({ ...p })
   }
 
   async function handleDelete(p: Product) {
@@ -52,34 +50,19 @@ function ProductsPage(): React.JSX.Element {
     }
   }
 
-  async function handleSave() {
-    if (!form.name || !form.category) {
-      alert('Nombre y categoría requeridos')
-      return
-    }
+  async function onSaveProduct(payload: Omit<Product, 'id' | 'createdAt'>) {
     try {
       if (isCreating) {
-        await createProduct({
-          name: form.name!,
-          category: form.category!,
-          price: form.price ?? 0,
-          stock: form.stock ?? 0,
-          image: form.image,
-        })
+        await createProduct(payload)
       } else if (editing) {
         await updateProduct({
           id: editing.id,
           createdAt: editing.createdAt,
-          name: form.name ?? editing.name,
-          category: form.category ?? editing.category,
-          price: form.price ?? editing.price,
-          stock: form.stock ?? editing.stock,
-          image: form.image ?? editing.image,
+          ...payload,
         })
       }
       setIsCreating(false)
       setEditing(null)
-      setForm({})
       await loadData()
     } catch (err) {
       console.error(err)
@@ -90,7 +73,6 @@ function ProductsPage(): React.JSX.Element {
   function handleCancel() {
     setIsCreating(false)
     setEditing(null)
-    setForm({})
   }
 
   const filtered = useMemo(() => {
@@ -129,54 +111,14 @@ function ProductsPage(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Create / Edit form */}
+      {/* Create / Edit modal form */}
       {(isCreating || editing) && (
-        <Card>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-            <div>
-              <label className="block text-sm text-gray-300">Nombre</label>
-              <Input
-                value={form.name ?? ''}
-                onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-300">Categoría</label>
-              <Input
-                value={form.category ?? ''}
-                onChange={(e) => setForm((s) => ({ ...s, category: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-300">Precio</label>
-              <Input
-                type="number"
-                step="0.01"
-                value={form.price ?? ''}
-                onChange={(e) => setForm((s) => ({ ...s, price: parseFloat(e.target.value || '0') }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-300">Stock</label>
-              <Input
-                type="number"
-                value={form.stock ?? ''}
-                onChange={(e) => setForm((s) => ({ ...s, stock: parseInt(e.target.value || '0') }))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-300">Imagen (URL)</label>
-              <Input
-                value={form.image ?? ''}
-                onChange={(e) => setForm((s) => ({ ...s, image: e.target.value }))}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleSave}>Guardar</Button>
-              <Button onClick={handleCancel}>Cancelar</Button>
-            </div>
-          </div>
-        </Card>
+        <ProductForm
+          initial={editing ?? undefined}
+          categories={categories}
+          onCancel={handleCancel}
+          onSave={onSaveProduct}
+        />
       )}
 
       <Card>

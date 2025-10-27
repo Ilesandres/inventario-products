@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu, FiChevronDown, FiUser, FiLogOut, FiBarChart2 } from 'react-icons/fi'
+import ROUTES from '../routes/appRoutes'
 
 type Props = {
   children: React.ReactNode
@@ -44,31 +45,31 @@ function Layout({ children }: Props): React.JSX.Element {
         <nav className="flex-1">
           <ul className="space-y-2">
             <li>
-              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/products" title="Productos">
+              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.PRODUCTS} title="Productos">
                 <FiArchive className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Productos</span>
               </a>
             </li>
             <li>
-              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/categories" title="Categorías">
+              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.CATEGORIES} title="Categorías">
                 <FiTag className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Categorías</span>
               </a>
             </li>
             <li>
-              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/users" title="Usuarios">
+              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.USERS} title="Usuarios">
                 <FiUsers className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Usuarios</span>
               </a>
             </li>
             <li>
-              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/settings" title="Ajustes">
+              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.SETTINGS} title="Ajustes">
                 <FiSettings className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Ajustes</span>
               </a>
             </li>
             <li>
-              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/dashboard" title="Dashboard">
+              <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.DASHBOARD} title="Dashboard">
                 <FiBarChart2 className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Dashboard</span>
               </a>

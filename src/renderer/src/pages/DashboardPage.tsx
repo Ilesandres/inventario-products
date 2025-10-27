@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { getAllProducts } from '../services'
+import React, { useEffect, useMemo } from 'react'
+import { useAtom } from 'jotai'
+import { productsAtom, reloadAtom } from '../store/atoms'
 import CardMetric from '../components/CardMetric'
 import Card from '../components/ui/Card'
 
@@ -7,17 +8,18 @@ import Card from '../components/ui/Card'
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts'
 
 function DashboardPage(): React.JSX.Element {
-  const [products, setProducts] = useState([] as any[])
+  const [products] = useAtom(productsAtom)
+  const [, triggerReload] = useAtom(reloadAtom)
 
   useEffect(() => {
-    let mounted = true
-    getAllProducts().then((ps) => {
-      if (mounted) setProducts(ps)
-    })
-    return () => {
-      mounted = false
-    }
-  }, [])
+    ;(async () => {
+      try {
+        await triggerReload()
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+  }, [triggerReload])
 
   const totalProducts = products.length
   const lowStockCount = products.filter((p) => p.stock <= 10).length

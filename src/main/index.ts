@@ -13,6 +13,9 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      // security: explicitly enable context isolation and disable nodeIntegration
+      contextIsolation: true,
+      nodeIntegration: false,
       sandbox: false
     }
   })
@@ -49,8 +52,26 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // IPC handlers - use handle/invoke and validate inputs in main
+  ipcMain.handle('ping', async () => {
+    console.log('pong')
+  })
+
+  ipcMain.handle('open-external', async (_event, url: unknown) => {
+    try {
+      if (typeof url !== 'string') return false
+      // Basic validation: must be a valid http(s) URL
+      const parsed = new URL(url)
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        await shell.openExternal(url)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('open-external validation failed', err)
+      return false
+    }
+  })
 
   createWindow()
 

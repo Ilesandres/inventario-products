@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu, FiChevronDown, FiUser, FiLogOut } from 'react-icons/fi'
+import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu, FiChevronDown, FiUser, FiLogOut, FiBarChart2 } from 'react-icons/fi'
 
 type Props = {
   children: React.ReactNode
@@ -69,6 +69,7 @@ function Layout({ children }: Props): React.JSX.Element {
             </li>
             <li>
               <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href="#/dashboard" title="Dashboard">
+                <FiBarChart2 className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Dashboard</span>
               </a>
             </li>

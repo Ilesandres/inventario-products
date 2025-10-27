@@ -1,5 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getAllProducts, getCategories, createProduct, updateProduct, deleteProduct } from '../services'
+import { useAtom } from 'jotai'
+import {
+  productsAtom,
+  categoriesAtom,
+  reloadAtom,
+  createProductAtom,
+  updateProductAtom,
+  deleteProductAtom,
+} from '../store/atoms'
 import { Product } from '../types/Product'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -7,27 +15,29 @@ import Input from '../components/ui/Input'
 import ProductForm from '../components/ProductForm'
 
 function ProductsPage(): React.JSX.Element {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products] = useAtom(productsAtom)
   const [query, setQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
 
-  const [categories, setCategories] = useState<string[]>([])
+  const [categories] = useAtom(categoriesAtom)
+  const [, triggerReload] = useAtom(reloadAtom)
   
 
   // UI state for create / edit
   const [editing, setEditing] = useState<Product | null>(null)
   const [isCreating, setIsCreating] = useState(false)
 
-  // Load products and categories
-  async function loadData() {
-    const [ps, cs] = await Promise.all([getAllProducts(), getCategories()])
-    setProducts(ps)
-    setCategories(cs)
-  }
-
   useEffect(() => {
-    loadData().catch((e) => console.error(e))
-  }, [])
+    // trigger an initial load via reload atom
+    // reloadAtom write function doesn't take args
+    ;(async () => {
+      try {
+        await triggerReload()
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+  }, [triggerReload])
 
   function startCreate() {
     setIsCreating(true)
@@ -39,11 +49,14 @@ function ProductsPage(): React.JSX.Element {
     setIsCreating(false)
   }
 
+  const [, createProduct] = useAtom(createProductAtom)
+  const [, updateProduct] = useAtom(updateProductAtom)
+  const [, deleteProduct] = useAtom(deleteProductAtom)
+
   async function handleDelete(p: Product) {
     if (!confirm(`Eliminar '${p.name}'?`)) return
     try {
       await deleteProduct(p.id)
-      await loadData()
     } catch (err) {
       console.error(err)
       alert('Error al eliminar')
@@ -63,7 +76,6 @@ function ProductsPage(): React.JSX.Element {
       }
       setIsCreating(false)
       setEditing(null)
-      await loadData()
     } catch (err) {
       console.error(err)
       alert('Error al guardar')

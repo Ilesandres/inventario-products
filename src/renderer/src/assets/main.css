@@ -154,6 +154,68 @@ code {
   }
 }
 
+/* 🔹 Solo Login y Register */
+.auth-page input,
+.auth-page textarea,
+.auth-page select {
+  color: white; 
+  background-color: rgb(36, 35, 43); 
+  border: 1px solid #666;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.auth-page input::placeholder {
+  color: #ffffff; 
+}
+
+.auth-page button {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: white;
+  font-weight: 600;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: fit-content;
+  align-self: center;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+.auth-page button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.6);
+}
+
+.auth-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-page a {
+  color: #7107d5; 
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.auth-page a:hover {
+  color: #4a4a4a; 
+  text-decoration: underline;
+}
+
+.auth-page h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(90deg, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+}
+
+
 @media (max-width: 720px) {
   .text {
     font-size: 20px;

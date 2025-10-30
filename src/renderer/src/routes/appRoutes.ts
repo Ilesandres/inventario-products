@@ -1,4 +1,7 @@
+// src/routes/appRoutes.ts
 export const ROUTES = {
+  LOGIN: '#/login',
+  REGISTER: '#/register',
   PRODUCTS: '#/products',
   CATEGORIES: '#/categories',
   USERS: '#/users',
@@ -13,7 +16,7 @@ export function navigate(route: string) {
 }
 
 export function getRouteFromHash(hash: string): string {
-  if (!hash) return ROUTES.PRODUCTS
+  if (!hash) return ROUTES.LOGIN
   return hash
 }
 

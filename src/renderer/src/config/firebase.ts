@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
-import { getAnalytics } from 'firebase/analytics'
+import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
@@ -17,17 +17,26 @@ const firebaseConfig = {
 }
 
 const firebaseApp = initializeApp(firebaseConfig)
-
 const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
 const storage = getStorage(firebaseApp)
 
+
 let analytics: ReturnType<typeof getAnalytics> | null = null
-try {
-  analytics = getAnalytics(firebaseApp)
-} catch (err) {
-  analytics = null
-}
+isSupported()
+  .then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(firebaseApp)
+      console.log('Firebase Analytics habilitado')
+    } else {
+      console.log('Firebase Analytics no soportado en este entorno')
+    }
+  })
+  .catch(() => {
+    analytics = null
+  })
+
+
 
 export { firebaseApp, auth, db, storage, analytics }
 export default firebaseApp

@@ -15,6 +15,16 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    // Añade esta configuración para el renderer
+    server: {
+      fs: {
+        allow: ['..', process.cwd()] // Permite acceder a archivos del sistema
+      }
+    },
+    // Configuración de assets
+    build: {
+      assetsInlineLimit: 0 // Esto evita que las imágenes se conviertan en base64
+    }
   }
 })

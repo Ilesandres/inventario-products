@@ -14,8 +14,7 @@ const LoginPage: React.FC = () => {
     setLoading(true)
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      // ✅ Redirige al dashboard (o cualquier ruta protegida)
-      window.location.hash = '#/dashboard'
+      window.location.hash = '#/products'
     } catch (err: any) {
       console.error(err)
       setError('Correo o contraseña incorrectos')

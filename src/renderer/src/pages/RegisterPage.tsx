@@ -17,19 +17,19 @@ const RegisterPage: React.FC = () => {
     setSuccess('')
     setLoading(true)
     try {
-      // 1️⃣ Crea usuario en Firebase Authentication
+      // 1Crea usuario en Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
-      // 2️⃣ Asigna nombre al perfil
+      // Asigna nombre al perfil
       await updateProfile(user, { displayName: name })
 
-      // 3️⃣ Crea documento en Firestore con su rol
+      // Crea documento en Firestore con su rol
       await setDoc(doc(db, 'users', user.uid), {
         id: user.uid,
         name,
         email,
-        role: 'user', // Puedes cambiar a 'admin' si lo deseas
+        role: 'user', 
         createdAt: serverTimestamp(),
       })
 
@@ -46,40 +46,44 @@ const RegisterPage: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '5rem' }}>
-      <div style={{ width: '320px', textAlign: 'center' }}>
-        <h2>Registro</h2>
-        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Nombre completo"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Registrando...' : 'Registrarse'}
-          </button>
-        </form>
-        {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-        {success && <p style={{ color: 'green', marginTop: '1rem' }}>{success}</p>}
-        <p style={{ marginTop: '1rem' }}>
-          ¿Ya tienes una cuenta? <a href="#/login">Inicia sesión</a>
-        </p>
+    <div className="auth-page"> { }
+      <div className="auth-container">
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '5rem' }}>
+          <div style={{ width: '320px', textAlign: 'center' }}>
+            <h2>Registro</h2>
+            <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <input
+                type="text"
+                placeholder="Nombre completo"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Registrando...' : 'Registrarse'}
+              </button>
+            </form>
+            {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+            {success && <p style={{ color: 'green', marginTop: '1rem' }}>{success}</p>}
+            <p style={{ marginTop: '1rem' }}>
+              ¿Ya tienes una cuenta? <a href="#/login">Inicia sesión</a>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

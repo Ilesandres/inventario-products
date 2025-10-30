@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth} from '../config/firebase'
+import { auth } from '../config/firebase'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -24,32 +24,36 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '5rem' }}>
-      <div style={{ width: '320px', textAlign: 'center' }}>
-        <h2>Iniciar Sesión</h2>
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Ingresando...' : 'Ingresar'}
-          </button>
-        </form>
-        {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-        <p style={{ marginTop: '1rem' }}>
-          ¿No tienes cuenta? <a href="#/register">Regístrate aquí</a>
-        </p>
+    <div className="auth-page"> { }
+      <div className="auth-container">
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '5rem' }}>
+          <div style={{ width: '320px', textAlign: 'center' }}>
+            <h2>Iniciar Sesión</h2>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Ingresando...' : 'Ingresar'}
+              </button>
+            </form>
+            {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+            <p style={{ marginTop: '1rem' }}>
+              ¿No tienes cuenta? <a href="#/register">Regístrate aquí</a>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

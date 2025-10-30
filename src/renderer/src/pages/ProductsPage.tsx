@@ -15,26 +15,39 @@ import Input from '../components/ui/Input'
 import ProductForm from '../components/ProductForm'
 
 function ProductsPage(): React.JSX.Element {
-  const [products] = useAtom(productsAtom)
-  const [query, setQuery] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('')
-
+  const [products, setProducts] = useAtom(productsAtom) // Cambiado para poder forzar update
   const [categories] = useAtom(categoriesAtom)
   const [, triggerReload] = useAtom(reloadAtom)
+  const [, createProduct] = useAtom(createProductAtom)
+  const [, updateProduct] = useAtom(updateProductAtom)
+  const [, deleteProduct] = useAtom(deleteProductAtom)
   
-
+  const [query, setQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
   const [editing, setEditing] = useState<Product | null>(null)
   const [isCreating, setIsCreating] = useState(false)
+  const [loading, setLoading] = useState(false)
 
+  // Cargar productos al montar el componente
   useEffect(() => {
-    ;(async () => {
-      try {
-        await triggerReload()
-      } catch (e) {
-        console.error(e)
-      }
-    })()
-  }, [triggerReload])
+    console.log('🔌 ProductsPage montado, cargando productos...')
+    loadProducts()
+  }, [])
+
+  // Función para cargar productos
+  const loadProducts = async () => {
+    setLoading(true)
+    try {
+      console.log('🔄 Iniciando carga de productos...')
+      await triggerReload()
+      console.log('✅ Carga completada. Productos en estado:', products.length)
+    } catch (error) {
+      console.error('❌ Error cargando productos:', error)
+      alert('Error al cargar productos: ' + error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   function startCreate() {
     setIsCreating(true)
@@ -46,22 +59,22 @@ function ProductsPage(): React.JSX.Element {
     setIsCreating(false)
   }
 
-  const [, createProduct] = useAtom(createProductAtom)
-  const [, updateProduct] = useAtom(updateProductAtom)
-  const [, deleteProduct] = useAtom(deleteProductAtom)
-
   async function handleDelete(p: Product) {
-    if (!confirm(`Eliminar '${p.name}'?`)) return
+    if (!confirm(`¿Eliminar '${p.name}'?`)) return
     try {
+      console.log('🗑️ Eliminando producto:', p.id)
       await deleteProduct(p.id)
-    } catch (err) {
-      console.error(err)
-      alert('Error al eliminar')
+      // No necesitamos llamar loadProducts() porque el atom ya lo hace
+    } catch (err: any) {
+      console.error('❌ Error eliminando:', err)
+      alert('Error al eliminar: ' + err.message)
     }
   }
 
   async function onSaveProduct(payload: Omit<Product, 'id' | 'createdAt'>) {
     try {
+      console.log('💾 Guardando producto...')
+      
       if (isCreating) {
         await createProduct(payload)
       } else if (editing) {
@@ -71,11 +84,13 @@ function ProductsPage(): React.JSX.Element {
           ...payload,
         })
       }
+      
       setIsCreating(false)
       setEditing(null)
-    } catch (err) {
-      console.error(err)
-      alert('Error al guardar')
+      // No necesitamos llamar loadProducts() porque el atom ya lo hace
+    } catch (err: any) {
+      console.error('❌ Error guardando:', err)
+      alert('Error al guardar: ' + err.message)
     }
   }
 
@@ -85,6 +100,7 @@ function ProductsPage(): React.JSX.Element {
   }
 
   const filtered = useMemo(() => {
+    console.log('🔍 Filtrando productos. Total:', products.length)
     return products.filter((p) => {
       if (categoryFilter && p.category !== categoryFilter) return false
       if (query && !p.name.toLowerCase().includes(query.toLowerCase())) return false
@@ -95,7 +111,11 @@ function ProductsPage(): React.JSX.Element {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Productos</h2>
+        <h2 className="text-2xl font-bold">
+          Productos 
+          {loading && ' (Cargando...)'}
+          {!loading && ` (${products.length})`}
+        </h2>
         <div className="flex items-center space-x-2">
           <Input
             value={query}
@@ -108,19 +128,25 @@ function ProductsPage(): React.JSX.Element {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="bg-gray-800 px-3 py-2 rounded text-sm"
           >
-            <option value="">Todas</option>
+            <option value="">Todas las categorías</option>
             {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
             ))}
           </select>
-          <Button onClick={() => { setQuery(''); setCategoryFilter('') }}>Limpiar</Button>
-          <Button onClick={startCreate}>Nuevo</Button>
+          <Button onClick={() => { setQuery(''); setCategoryFilter('') }}>
+            Limpiar
+          </Button>
+          <Button onClick={loadProducts} disabled={loading}>
+             Recargar
+          </Button>
+          <Button onClick={startCreate} disabled={loading}>
+             Nuevo
+          </Button>
         </div>
       </div>
 
-      {/* Create / Edit modal form */}
       {(isCreating || editing) && (
         <ProductForm
           initial={editing ?? undefined}
@@ -153,24 +179,49 @@ function ProductsPage(): React.JSX.Element {
                         alt={p.name}
                         className="w-12 h-12 rounded object-cover mr-3 flex-shrink-0"
                       />
-                      <div className="truncate">{p.name}</div>
+                      <div>
+                        <div className="font-medium">{p.name}</div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 align-top">{p.category}</td>
                   <td className="px-4 py-3 align-top">${p.price.toFixed(2)}</td>
                   <td className="px-4 py-3 align-top">{p.stock}</td>
-                  <td className="px-4 py-3 align-top">{new Date(p.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3 align-top">
-                      <div className="flex items-center gap-2">
-                      <Button onClick={() => startEdit(p)}>Editar</Button>
-                      <Button onClick={() => handleDelete(p)}>Eliminar</Button>
+                    {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'N/A'}
+                  </td>
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex items-center gap-2">
+                      <Button onClick={() => startEdit(p)} size="sm">
+                        Editar
+                      </Button>
+                      <Button onClick={() => handleDelete(p)} size="sm" variant="danger">
+                        Eliminar
+                      </Button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && <div className="p-4 text-gray-400">No se encontraron productos.</div>}
+          
+          {loading && (
+            <div className="p-8 text-center text-gray-400">
+              Cargando productos...
+            </div>
+          )}
+          
+          {!loading && filtered.length === 0 && products.length === 0 && (
+            <div className="p-8 text-center text-gray-400">
+              No hay productos. ¡Crea el primero!
+            </div>
+          )}
+          
+          {!loading && filtered.length === 0 && products.length > 0 && (
+            <div className="p-8 text-center text-gray-400">
+              No se encontraron productos con los filtros aplicados.
+            </div>
+          )}
         </div>
       </Card>
     </div>

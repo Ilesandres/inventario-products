@@ -4,10 +4,9 @@
     <meta charset="UTF-8" />
     <title>Electron</title>
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:"
-    />
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.google.com https://identitytoolkit.googleapis.com; img-src 'self' data: https://*; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://www.googleapis.com;" />
+
   </head>
 
   <body>

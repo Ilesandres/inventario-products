@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { FiArchive, FiTag, FiUsers, FiSettings, FiMenu, FiChevronDown, FiUser, FiLogOut, FiBarChart2 } from 'react-icons/fi'
 import ROUTES from '../routes/appRoutes'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 type Props = {
   children: React.ReactNode
@@ -11,6 +13,7 @@ function Layout({ children }: Props): React.JSX.Element {
   const [profileOpen, setProfileOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const { user, logout } = useContext(AuthContext)
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -32,11 +35,11 @@ function Layout({ children }: Props): React.JSX.Element {
     }
   }, [profileOpen])
 
-    const asideWidth = collapsed ? 'w-20' : 'w-64'
+  const asideWidth = collapsed ? 'w-20' : 'w-64'
 
   return (
-     <div className="flex min-h-screen bg-gray-900 text-gray-100">
-      {/* Sidebar (fixed) */}
+    <div className="flex min-h-screen bg-gray-900 text-gray-100">
+      {/* Sidebar */}
       <aside className={`${asideWidth} fixed left-0 top-0 bottom-0 bg-gray-800 border-r border-gray-700 p-4 transition-all duration-200 z-20 overflow-hidden flex flex-col`}> 
         <div className={`mb-6 px-2 transition-opacity duration-200 ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
           <h1 className="text-xl font-bold">Inventario</h1>
@@ -78,10 +81,12 @@ function Layout({ children }: Props): React.JSX.Element {
         </nav>
       </aside>
 
-      {/* Main content area */}
+      {/* Main content */}
       <div className={`flex-1 flex flex-col transition-all duration-200 ${collapsed ? 'ml-20' : 'ml-64'}`}>
-        {/* Header */}
-        <header className="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 fixed top-0 right-0 left-0 z-10 transition-all duration-200" style={{ left: collapsed ? '5rem' : '16rem' }}>
+        <header
+          className="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 fixed top-0 right-0 left-0 z-10 transition-all duration-200"
+          style={{ left: collapsed ? '5rem' : '16rem' }}
+        >
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setCollapsed((s) => !s)}
@@ -93,9 +98,8 @@ function Layout({ children }: Props): React.JSX.Element {
             </button>
           </div>
 
-          {/* Profile / avatar with dropdown */}
           <div className="flex items-center space-x-3 relative">
-            <div className="text-sm text-gray-300">Andrés</div>
+            <div className="text-sm text-gray-300">{user?.name || 'Usuario'}</div>
             <button
               ref={buttonRef}
               onClick={() => setProfileOpen((s) => !s)}
@@ -104,20 +108,26 @@ function Layout({ children }: Props): React.JSX.Element {
               aria-expanded={profileOpen}
               title="Perfil"
             >
-              A
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
               <FiChevronDown className="ml-1 text-gray-300 text-xs z-10" />
             </button>
 
             {profileOpen && (
               <div ref={menuRef} className="absolute right-0 top-full mt-2 w-40 bg-gray-800 border border-gray-700 rounded shadow-lg z-40">
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* open profile */ setProfileOpen(false) }}>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => setProfileOpen(false)}>
                   <FiUser /> Perfil
                 </button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* open settings */ setProfileOpen(false) }}>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => setProfileOpen(false)}>
                   <FiSettings /> Ajustes
                 </button>
                 <div className="border-t border-gray-700" />
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2" onClick={() => { /* logout */ setProfileOpen(false) }}>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2"
+                  onClick={() => {
+                    logout()
+                    setProfileOpen(false)
+                  }}
+                >
                   <FiLogOut /> Cerrar sesión
                 </button>
               </div>
@@ -125,10 +135,7 @@ function Layout({ children }: Props): React.JSX.Element {
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 p-6 mt-16 overflow-auto"> 
-          {children}
-        </main>
+        <main className="flex-1 p-6 mt-16 overflow-auto">{children}</main>
       </div>
     </div>
   )

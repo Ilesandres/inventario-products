@@ -1,8 +1,8 @@
-// src/services/authService.ts
 import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
 import { User } from '../types/User'
+import { signOut } from 'firebase/auth'
 
 export async function registerUser(name: string, email: string, password: string, role: 'admin' | 'user' = 'user') {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -38,5 +38,13 @@ export async function loginUser(email: string, password: string): Promise<User |
   } else {
     console.warn('Usuario no encontrado en Firestore')
     return null
+  }
+}
+
+export async function logoutUser() {
+  try {
+    await signOut(auth)
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error)
   }
 }

@@ -1,8 +1,7 @@
 import { auth, db } from '../config/firebase'
 import React, { createContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
+import { onAuthStateChanged, User as FirebaseUser, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
-
 
 export interface User {
   id: string
@@ -49,7 +48,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const logout = async () => {
-    await auth.signOut()
+    try {
+      await signOut(auth)
+      setUser(null)
+      window.location.hash = '#/login'
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err)
+    }
   }
 
   return (

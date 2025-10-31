@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useEffect, useState } from 'react'
 import Layout from './components/Layout'
 import ProductsPage from './pages/ProductsPage'
@@ -71,7 +70,6 @@ function App(): React.JSX.Element {
     <AuthProvider>
       <AppProvider>
         {route.startsWith(ROUTES.LOGIN) || route.startsWith(ROUTES.REGISTER) ? (
-          // No mostramos el layout para login/register
           Page
         ) : (
           <Layout>{Page}</Layout>

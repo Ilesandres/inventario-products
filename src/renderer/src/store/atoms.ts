@@ -1,39 +1,63 @@
 import { atom } from 'jotai'
-import { getAllProducts, createProduct as svcCreate, updateProduct as svcUpdate, deleteProduct as svcDelete } from '../services'
+import { getAllProducts, createProduct as svcCreate, updateProduct as svcUpdate, deleteProduct as svcDelete } from '../services/productService'
 import type { Product } from '../types/Product'
 
 export const productsAtom = atom<Product[]>([])
 export const categoriesAtom = atom<string[]>([])
 
-// Reload atom - write-only: calling set(reloadAtom, undefined) will refresh products & categories
-export const reloadAtom = atom(null, async (_get, set) => {
-  const ps = await getAllProducts()
-  set(productsAtom, ps)
-  const cats = Array.from(new Set(ps.map((p) => p.category)))
-  set(categoriesAtom, cats)
+// Función helper para actualizar productos y categorías
+const updateProductsAndCategories = async (set: any) => {
+  try {
+
+    const ps = await getAllProducts()
+
+    set(productsAtom, ps)
+    const cats = Array.from(new Set(ps.map((p) => p.category))).filter(Boolean)
+  
+    set(categoriesAtom, cats)
+  } catch (error) {
+    console.error(' Error en updateProductsAndCategories:', error)
+    throw error
+  }
+}
+
+// Reload atom - CORREGIDO
+export const reloadAtom = atom(null, async (get, set) => {
+
+  await updateProductsAndCategories(set)
 })
 
-export const createProductAtom = atom(null, async (_get, set, payload: Omit<Product, 'id' | 'createdAt'>) => {
-  await svcCreate(payload)
-  // refresh by fetching latest products
-  const ps = await getAllProducts()
-  set(productsAtom, ps)
-  const cats = Array.from(new Set(ps.map((p) => p.category)))
-  set(categoriesAtom, cats)
+export const createProductAtom = atom(null, async (get, set, payload: Omit<Product, 'id' | 'createdAt'>) => {
+
+  try {
+    await svcCreate(payload)
+   
+    await updateProductsAndCategories(set)
+  } catch (error) {
+    console.error(' Error en createProductAtom:', error)
+    throw error
+  }
 })
 
-export const updateProductAtom = atom(null, async (_get, set, payload: Product) => {
-  await svcUpdate(payload)
-  const ps = await getAllProducts()
-  set(productsAtom, ps)
-  const cats = Array.from(new Set(ps.map((p) => p.category)))
-  set(categoriesAtom, cats)
+export const updateProductAtom = atom(null, async (get, set, payload: Product) => {
+
+  try {
+    await svcUpdate(payload)
+  
+    await updateProductsAndCategories(set)
+  } catch (error) {
+    
+    throw error
+  }
 })
 
-export const deleteProductAtom = atom(null, async (_get, set, id: string) => {
-  await svcDelete(id)
-  const ps = await getAllProducts()
-  set(productsAtom, ps)
-  const cats = Array.from(new Set(ps.map((p) => p.category)))
-  set(categoriesAtom, cats)
+export const deleteProductAtom = atom(null, async (get, set, id: string) => {
+  console.log('🎯 Ejecutando deleteProductAtom...')
+  try {
+    await svcDelete(id)
+    await updateProductsAndCategories(set)
+  } catch (error) {
+    
+    throw error
+  }
 })

@@ -15,7 +15,7 @@ import Input from '../components/ui/Input'
 import ProductForm from '../components/ProductForm'
 
 function ProductsPage(): React.JSX.Element {
-  const [products, setProducts] = useAtom(productsAtom) // Cambiado para poder forzar update
+  const [products, setProducts] = useAtom(productsAtom)
   const [categories] = useAtom(categoriesAtom)
   const [, triggerReload] = useAtom(reloadAtom)
   const [, createProduct] = useAtom(createProductAtom)
@@ -28,21 +28,21 @@ function ProductsPage(): React.JSX.Element {
   const [isCreating, setIsCreating] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // Cargar productos al montar el componente
+  
   useEffect(() => {
     console.log('🔌 ProductsPage montado, cargando productos...')
     loadProducts()
   }, [])
 
-  // Función para cargar productos
+
   const loadProducts = async () => {
     setLoading(true)
     try {
-      console.log('🔄 Iniciando carga de productos...')
+      console.log('Iniciando carga de productos...')
       await triggerReload()
-      console.log('✅ Carga completada. Productos en estado:', products.length)
+      console.log('Carga completada. Productos en estado:', products.length)
     } catch (error) {
-      console.error('❌ Error cargando productos:', error)
+      console.error('Error cargando productos:', error)
       alert('Error al cargar productos: ' + error)
     } finally {
       setLoading(false)
@@ -62,18 +62,17 @@ function ProductsPage(): React.JSX.Element {
   async function handleDelete(p: Product) {
     if (!confirm(`¿Eliminar '${p.name}'?`)) return
     try {
-      console.log('🗑️ Eliminando producto:', p.id)
+      console.log('Eliminando producto:', p.id)
       await deleteProduct(p.id)
-      // No necesitamos llamar loadProducts() porque el atom ya lo hace
     } catch (err: any) {
-      console.error('❌ Error eliminando:', err)
+      console.error('Error eliminando:', err)
       alert('Error al eliminar: ' + err.message)
     }
   }
 
   async function onSaveProduct(payload: Omit<Product, 'id' | 'createdAt'>) {
     try {
-      console.log('💾 Guardando producto...')
+      console.log('Guardando producto...')
       
       if (isCreating) {
         await createProduct(payload)
@@ -87,9 +86,8 @@ function ProductsPage(): React.JSX.Element {
       
       setIsCreating(false)
       setEditing(null)
-      // No necesitamos llamar loadProducts() porque el atom ya lo hace
     } catch (err: any) {
-      console.error('❌ Error guardando:', err)
+      console.error('Error guardando:', err)
       alert('Error al guardar: ' + err.message)
     }
   }
@@ -100,7 +98,7 @@ function ProductsPage(): React.JSX.Element {
   }
 
   const filtered = useMemo(() => {
-    console.log('🔍 Filtrando productos. Total:', products.length)
+    console.log('Filtrando productos. Total:', products.length)
     return products.filter((p) => {
       if (categoryFilter && p.category !== categoryFilter) return false
       if (query && !p.name.toLowerCase().includes(query.toLowerCase())) return false
@@ -114,7 +112,7 @@ function ProductsPage(): React.JSX.Element {
         <h2 className="text-2xl font-bold">
           Productos 
           {loading && ' (Cargando...)'}
-          {!loading && ` (${products.length})`}
+          {!loading && ` (${filtered.length} de ${products.length})`}
         </h2>
         <div className="flex items-center space-x-2">
           <Input
@@ -157,16 +155,31 @@ function ProductsPage(): React.JSX.Element {
       )}
 
       <Card>
-        <div className="overflow-x-auto">
+        <div className={`
+          overflow-x-auto 
+    max-h-[480px] 
+    overflow-y-auto 
+    relative
+    /* Scrollbar personalizado sin plugin */
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-gray-800
+    [&::-webkit-scrollbar-track]:rounded-full
+    [&::-webkit-scrollbar-thumb]:bg-gray-600
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    hover:[&::-webkit-scrollbar-thumb]:bg-gray-500
+    /* Para Firefox */
+    scrollbar-width: thin
+    scrollbar-color: #4B5563 #1F2937
+        `}>
           <table className="min-w-full text-left text-sm">
-            <thead>
+            <thead className="sticky top-0 bg-gray-900 z-10">
               <tr className="text-gray-300">
-                <th className="px-4 py-2">Nombre</th>
-                <th className="px-4 py-2">Categoría</th>
-                <th className="px-4 py-2">Precio</th>
-                <th className="px-4 py-2">Stock</th>
-                <th className="px-4 py-2">Creado</th>
-                <th className="px-4 py-2">Acciones</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Nombre</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Categoría</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Precio</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Stock</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Creado</th>
+                <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -206,8 +219,10 @@ function ProductsPage(): React.JSX.Element {
           </table>
           
           {loading && (
-            <div className="p-8 text-center text-gray-400">
-              Cargando productos...
+            <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+              <div className="p-8 text-center text-gray-400">
+                Cargando productos...
+              </div>
             </div>
           )}
           
@@ -220,6 +235,13 @@ function ProductsPage(): React.JSX.Element {
           {!loading && filtered.length === 0 && products.length > 0 && (
             <div className="p-8 text-center text-gray-400">
               No se encontraron productos con los filtros aplicados.
+            </div>
+          )}
+
+          {}
+          {filtered.length > 6 && (
+            <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent h-6 flex items-center justify-center">
+              
             </div>
           )}
         </div>

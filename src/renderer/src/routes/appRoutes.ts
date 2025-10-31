@@ -1,4 +1,3 @@
-// src/routes/appRoutes.ts
 export const ROUTES = {
   LOGIN: '#/login',
   REGISTER: '#/register',

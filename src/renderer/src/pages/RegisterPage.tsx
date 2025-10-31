@@ -17,7 +17,7 @@ const RegisterPage: React.FC = () => {
     setSuccess('')
     setLoading(true)
     try {
-      // 1Crea usuario en Firebase Authentication
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 

@@ -22,7 +22,7 @@ function ProductForm({ initial, categories, onCancel, onSave }: Props): React.JS
   const [existingImage, setExistingImage] = useState<string | null>(initial?.image ?? null)
   const [loading, setLoading] = useState(false)
 
-  // Efecto para previsualización de archivos nuevos - CORREGIDO para Electron
+
   useEffect(() => {
     if (file) {
       console.log('Procesando archivo:', file.name)
@@ -62,13 +62,13 @@ function ProductForm({ initial, categories, onCancel, onSave }: Props): React.JS
       // Validaciones
       if (!selectedFile.type.startsWith('image/')) {
         alert('Por favor selecciona un archivo de imagen válido')
-        e.target.value = '' // Reset input
+        e.target.value = ''
         return
       }
       
       if (selectedFile.size > 5 * 1024 * 1024) {
         alert('La imagen es demasiado grande. Máximo 5MB permitido.')
-        e.target.value = '' // Reset input
+        e.target.value = '' 
         return
       }
       
@@ -131,7 +131,7 @@ function ProductForm({ initial, categories, onCancel, onSave }: Props): React.JS
     }
   }
 
-  // Determinar qué imagen mostrar
+  
   const displayImage = preview || existingImage
 
   return (

@@ -154,7 +154,7 @@ code {
   }
 }
 
-/* 🔹 Solo Login y Register */
+
 .auth-page input,
 .auth-page textarea,
 .auth-page select {
@@ -214,6 +214,7 @@ code {
   -webkit-text-fill-color: transparent;
   margin-bottom: 1.5rem;
 }
+
 
 
 @media (max-width: 720px) {

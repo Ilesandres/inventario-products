@@ -59,24 +59,28 @@ function Layout({ children }: Props): React.JSX.Element {
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Categorías</span>
               </a>
             </li>
+            {user?.role === 'admin' && (
             <li>
               <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.USERS} title="Usuarios">
                 <FiUsers className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Usuarios</span>
               </a>
             </li>
+            )}
             <li>
               <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.SETTINGS} title="Ajustes">
                 <FiSettings className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Ajustes</span>
               </a>
             </li>
+            {user?.role === 'admin' && (
             <li>
               <a className={`flex items-center px-3 py-2 rounded hover:bg-gray-700 ${collapsed ? 'justify-center' : ''}`} href={ROUTES.DASHBOARD} title="Dashboard">
                 <FiBarChart2 className={`text-gray-300 ${collapsed ? 'text-2xl' : 'text-xl'}`} />
                 <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Dashboard</span>
               </a>
             </li>
+            )}
           </ul>
         </nav>
       </aside>

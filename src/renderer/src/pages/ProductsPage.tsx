@@ -172,7 +172,7 @@ function ProductsPage(): React.JSX.Element {
     scrollbar-color: #4B5563 #1F2937
         `}>
           <table className="min-w-full text-left text-sm">
-            <thead className="sticky top-0 bg-gray-900 z-10">
+            <thead className="sticky top-0 bg-gray-900 z-0">
               <tr className="text-gray-300">
                 <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Nombre</th>
                 <th className="px-4 py-3 bg-gray-900 border-b border-gray-700">Categoría</th>
